@@ -1,15 +1,18 @@
 <?php
-
 namespace app\controllers;
 
 use Yii;
-use yii\filters\AccessControl;
 use yii\web\Controller;
 use yii\web\Response;
 use yii\filters\VerbFilter;
+use yii\filters\AccessControl;
 use app\models\LoginForm;
+use app\models\SignupForm;
 use app\models\ContactForm;
 
+/**
+ * Site controller
+ */
 class SiteController extends Controller
 {
     /**
@@ -19,9 +22,14 @@ class SiteController extends Controller
     {
         return [
             'access' => [
-                'class' => AccessControl::className(),
-                'only' => ['logout'],
+                'class' => AccessControl::class,
+                'only' => ['logout', 'signup'],
                 'rules' => [
+                    [
+                        'actions' => ['signup'],
+                        'allow' => true,
+                        'roles' => ['?'],
+                    ],
                     [
                         'actions' => ['logout'],
                         'allow' => true,
@@ -30,7 +38,7 @@ class SiteController extends Controller
                 ],
             ],
             'verbs' => [
-                'class' => VerbFilter::className(),
+                'class' => VerbFilter::class,
                 'actions' => [
                     'logout' => ['post'],
                 ],
@@ -57,7 +65,7 @@ class SiteController extends Controller
     /**
      * Displays homepage.
      *
-     * @return string
+     * @return mixed
      */
     public function actionIndex()
     {
@@ -65,9 +73,9 @@ class SiteController extends Controller
     }
 
     /**
-     * Login action.
+     * Logs in a user.
      *
-     * @return Response|string
+     * @return mixed
      */
     public function actionLogin()
     {
@@ -78,18 +86,19 @@ class SiteController extends Controller
         $model = new LoginForm();
         if ($model->load(Yii::$app->request->post()) && $model->login()) {
             return $this->goBack();
-        }
+        } else {
+            $model->password = '';
 
-        $model->password = '';
-        return $this->render('login', [
-            'model' => $model,
-        ]);
+            return $this->render('login', [
+                'model' => $model,
+            ]);
+        }
     }
 
     /**
-     * Logout action.
+     * Logs out the current user.
      *
-     * @return Response
+     * @return mixed
      */
     public function actionLogout()
     {
@@ -119,10 +128,29 @@ class SiteController extends Controller
     /**
      * Displays about page.
      *
-     * @return string
+     * @return mixed
      */
     public function actionAbout()
     {
         return $this->render('about');
+    }
+
+    /**
+     * Signs user up.
+     *
+     * @return mixed
+     */
+    public function actionSignup()
+    {
+        $model = new SignupForm();
+        if ($model->load(Yii::$app->request->post()) && $model->signup()) {
+            Yii::$app->session->setFlash('success', 'Thank you for registration');
+
+            return $this->goHome();
+        }
+
+        return $this->render('signup', [
+            'model' => $model,
+        ]);
     }
 }
