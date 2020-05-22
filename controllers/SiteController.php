@@ -1,14 +1,13 @@
 <?php
 namespace app\controllers;
 
+use app\models\CabinetForm;
 use Yii;
 use yii\web\Controller;
-use yii\web\Response;
 use yii\filters\VerbFilter;
 use yii\filters\AccessControl;
 use app\models\LoginForm;
 use app\models\SignupForm;
-use app\models\ContactForm;
 
 /**
  * Site controller
@@ -23,7 +22,7 @@ class SiteController extends Controller
         return [
             'access' => [
                 'class' => AccessControl::class,
-                'only' => ['logout', 'signup'],
+                'only' => ['logout', 'signup', 'cabinet'],
                 'rules' => [
                     [
                         'actions' => ['signup'],
@@ -31,7 +30,7 @@ class SiteController extends Controller
                         'roles' => ['?'],
                     ],
                     [
-                        'actions' => ['logout'],
+                        'actions' => ['logout', 'cabinet'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
@@ -122,6 +121,22 @@ class SiteController extends Controller
         }
 
         return $this->render('signup', [
+            'model' => $model,
+        ]);
+    }
+
+    public function actionCabinet()
+    {
+        $model = CabinetForm::findCurrent();
+
+
+        if ($model->load(Yii::$app->request->post()) && $model->saveSettings()) {
+            Yii::$app->session->setFlash('success', 'Thank you for registration');
+
+            return $this->goHome();
+        }
+
+        return $this->render('cabinet', [
             'model' => $model,
         ]);
     }

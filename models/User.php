@@ -21,9 +21,6 @@ use yii\web\IdentityInterface;
  */
 class User extends ActiveRecord implements IdentityInterface
 {
-    private const EVENT_SIGNUP = 'user.signup';
-    private const EVENT_PASSWORD_CHANGES = 'user.passwordChanges';
-
     /**
      * {@inheritdoc}
      */
@@ -42,8 +39,8 @@ class User extends ActiveRecord implements IdentityInterface
             [
                 'class' => NotificationsBehavior::class,
                 'messages' => [
-                    self::EVENT_SIGNUP => 'Hello!',
-                    self::EVENT_PASSWORD_CHANGES => 'Password has been changes.',
+                    NotificationSettings::USER_SIGNUP => 'Hello!',
+                    NotificationSettings::USER_PASSWORD_CHANGES => 'Password has been changes.',
                 ],
             ],
         ];
@@ -56,10 +53,10 @@ class User extends ActiveRecord implements IdentityInterface
     {
         parent::afterSave($insert, $changedAttributes);
         if ($insert) {
-            $this->trigger(self::EVENT_SIGNUP);
+            $this->trigger(NotificationSettings::USER_SIGNUP);
         } else {
             if ($changedAttributes['password_hash'] ?? false) {
-                $this->trigger(self::EVENT_PASSWORD_CHANGES);
+                $this->trigger(NotificationSettings::USER_PASSWORD_CHANGES);
             }
         }
     }

@@ -18,6 +18,12 @@ use function in_array;
  */
 class NotificationSettings extends \yii\db\ActiveRecord
 {
+    public const USER_SIGNUP = 'user.signup';
+    public const USER_PASSWORD_CHANGES = 'user.passwordChanges';
+    public const ALLOWED_SETTINGS = [
+        NotificationSettings::USER_SIGNUP,
+        NotificationSettings::USER_PASSWORD_CHANGES,
+    ];
     private static $events;
 
     /**
@@ -84,17 +90,40 @@ class NotificationSettings extends \yii\db\ActiveRecord
     public static function has(string $event): bool
     {
         $result = false;
-        if (!Yii::$app->user->isGuest) {
+        if (Yii::$app->user->isGuest) {
             return $result;
         }
         if (self::$events === null) {
-            $userId = Yii::$app->user->getId();
+            self::$events = self::getEvents(Yii::$app->user->getId());
+        }
+
+        return in_array($event, self::$events, true);
+    }
+
+    public static function setEvents(int $userId, array $events): void
+    {
+        self::deleteAll(['user_id' => $userId]);
+        $data = [];
+        foreach ($events as $event) {
+            $data[] = [$userId, $event];
+        }
+        if ($data) {
+            Yii::$app->db
+                ->createCommand()
+                ->batchInsert(self::tableName(), ['user_id', 'event'], $data)
+                ->execute();
+        }
+    }
+
+    public static function getEvents(int $userId): array
+    {
+        if (self::$events === null) {
             self::$events = self::find()
                 ->select('event')
                 ->where(['user_id' => $userId])
                 ->column();
         }
 
-        return in_array($event, self::$events, true);
+        return self::$events;
     }
 }
