@@ -23,7 +23,6 @@ class NotificationSettings extends \yii\db\ActiveRecord
     public const NEWS_CREATE = 'news.create';
     public const NEWS_DELETE = 'news.delete';
     public const ALLOWED_SETTINGS = [
-        NotificationSettings::USER_SIGNUP,
         NotificationSettings::USER_PASSWORD_CHANGES,
         NotificationSettings::NEWS_CREATE,
         NotificationSettings::NEWS_DELETE,

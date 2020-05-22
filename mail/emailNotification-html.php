@@ -5,5 +5,5 @@
 
 ?>
 <div class="verify-email">
-    <p><?= $message ?>,</p>
+    <p><?= $message ?></p>
 </div>

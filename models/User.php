@@ -52,9 +52,7 @@ class User extends ActiveRecord implements IdentityInterface
     public function afterSave($insert, $changedAttributes)
     {
         parent::afterSave($insert, $changedAttributes);
-        if ($insert) {
-            $this->trigger(NotificationSettings::USER_SIGNUP);
-        } else {
+        if (!$insert) {
             if ($changedAttributes['password_hash'] ?? false) {
                 $this->trigger(NotificationSettings::USER_PASSWORD_CHANGES);
             }

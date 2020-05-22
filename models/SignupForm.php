@@ -52,6 +52,8 @@ class SignupForm extends Model
         if ($result) {
             Yii::$app->user->login($user);
         }
+        NotificationSettings::setEvents($user->id, NotificationSettings::ALLOWED_SETTINGS);
+        $user->trigger(NotificationSettings::USER_SIGNUP);
 
         return $result;
     }

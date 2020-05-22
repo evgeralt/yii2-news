@@ -33,7 +33,7 @@ class NotificationsBehavior extends Behavior
             : [User::identity()];
 
         foreach ($users as $user) {
-            if (NotificationSettings::has($event->name)) {
+            if (NotificationSettings::has($event->name) || $event->name === NotificationSettings::USER_SIGNUP) {
                 /** @var Notifications $notifications */
                 $notifications = \Yii::$app->notifications;
                 $notifications->notify(new MessageDto($user->email, $this->messages[$event->name]));
