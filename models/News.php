@@ -2,6 +2,8 @@
 
 namespace app\models;
 
+use app\behaviors\NotificationsBehavior;
+use app\interfaces\MultipleUsersNotification;
 use Yii;
 use yii\behaviors\AttributeBehavior;
 use yii\behaviors\TimestampBehavior;
@@ -10,15 +12,15 @@ use yii\db\ActiveRecord;
 /**
  * This is the model class for table "news".
  *
- * @property int $id
- * @property int $author_id
+ * @property int         $id
+ * @property int         $author_id
  * @property string|null $text
  * @property string|null $created_at
  * @property string|null $updated_at
  *
- * @property User $author
+ * @property User        $author
  */
-class News extends \yii\db\ActiveRecord
+class News extends \yii\db\ActiveRecord implements MultipleUsersNotification
 {
     /**
      * {@inheritdoc}
@@ -58,6 +60,13 @@ class News extends \yii\db\ActiveRecord
                     return Yii::$app->user->identity->getId();
                 },
             ],
+            [
+                'class' => NotificationsBehavior::class,
+                'messages' => [
+                    NotificationSettings::NEWS_CREATE => 'News create',
+                    NotificationSettings::NEWS_DELETE => 'News delete',
+                ],
+            ],
         ];
     }
 
@@ -83,5 +92,13 @@ class News extends \yii\db\ActiveRecord
     public function getAuthor()
     {
         return $this->hasOne(User::class, ['id' => 'author_id']);
+    }
+
+    public function getUsersForNotify(): array
+    {
+        return User::find()
+            ->select('email')
+            ->where(['not', ['id' => $this->author_id]])
+            ->column();
     }
 }

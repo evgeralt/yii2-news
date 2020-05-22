@@ -20,7 +20,7 @@ class Email implements Transport
                 ['message' => $messageDto->getMessage()]
             )
             ->setFrom([Yii::$app->params['senderEmail'] => Yii::$app->name . ' robot'])
-            ->setTo($messageDto->getUser()->email)
+            ->setTo($messageDto->getEmail())
             ->setSubject('Account registration at ' . Yii::$app->name)
             ->send();
     }

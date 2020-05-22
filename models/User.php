@@ -143,7 +143,7 @@ class User extends ActiveRecord implements IdentityInterface
         $this->auth_key = Yii::$app->security->generateRandomString();
     }
 
-    public static function identity(): self
+    public static function identity(): ?self
     {
         /** @var self $identity */
         $identity = Yii::$app->user->identity;

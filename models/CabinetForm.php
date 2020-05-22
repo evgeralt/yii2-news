@@ -43,9 +43,9 @@ class CabinetForm extends Model
         $user = User::identity();
         if ($this->password) {
             $user->setPassword($this->password);
-            $user->save();
         }
         NotificationSettings::setEvents($user->id, $this->notification_settings ?: []);
+        $user->save();
 
         return $result;
     }

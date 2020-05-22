@@ -2,22 +2,20 @@
 
 namespace app\cases\notifications;
 
-use app\models\User;
-
 class MessageDto
 {
-    private $user;
+    private $email;
     private $message;
 
-    public function __construct(User $user, string $message)
+    public function __construct(string $email, string $message)
     {
-        $this->user = $user;
+        $this->email = $email;
         $this->message = $message;
     }
 
-    public function getUser(): User
+    public function getEmail(): string
     {
-        return $this->user;
+        return $this->email;
     }
 
     public function getMessage(): string

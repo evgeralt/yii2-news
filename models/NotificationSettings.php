@@ -20,9 +20,13 @@ class NotificationSettings extends \yii\db\ActiveRecord
 {
     public const USER_SIGNUP = 'user.signup';
     public const USER_PASSWORD_CHANGES = 'user.passwordChanges';
+    public const NEWS_CREATE = 'news.create';
+    public const NEWS_DELETE = 'news.delete';
     public const ALLOWED_SETTINGS = [
         NotificationSettings::USER_SIGNUP,
         NotificationSettings::USER_PASSWORD_CHANGES,
+        NotificationSettings::NEWS_CREATE,
+        NotificationSettings::NEWS_DELETE,
     ];
     private static $events;
 
@@ -102,6 +106,7 @@ class NotificationSettings extends \yii\db\ActiveRecord
 
     public static function setEvents(int $userId, array $events): void
     {
+        self::$events = $events;
         self::deleteAll(['user_id' => $userId]);
         $data = [];
         foreach ($events as $event) {
