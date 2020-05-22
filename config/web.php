@@ -52,6 +52,12 @@ $config = [
             ],
         ],
         */
+        'notifications' => [
+            'class' => \app\components\Notifications::class,
+            'transports' => [
+                \app\cases\notifications\Email::class,
+            ],
+        ],
     ],
     'params' => $params,
 ];
