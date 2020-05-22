@@ -1,7 +1,6 @@
 <?php
 namespace app\models;
 
-use app\behaviors\EventNotificationsDto;
 use app\behaviors\NotificationsBehavior;
 use Yii;
 use yii\base\NotSupportedException;
@@ -22,7 +21,8 @@ use yii\web\IdentityInterface;
  */
 class User extends ActiveRecord implements IdentityInterface
 {
-    private const EVENT_PASSWORD_CHANGES = 'passwordChanges';
+    private const EVENT_SIGNUP = 'user.signup';
+    private const EVENT_PASSWORD_CHANGES = 'user.passwordChanges';
 
     /**
      * {@inheritdoc}
@@ -42,7 +42,7 @@ class User extends ActiveRecord implements IdentityInterface
             [
                 'class' => NotificationsBehavior::class,
                 'messages' => [
-                    self::EVENT_AFTER_INSERT => 'Hello!',
+                    self::EVENT_SIGNUP => 'Hello!',
                     self::EVENT_PASSWORD_CHANGES => 'Password has been changes.',
                 ],
             ],
@@ -55,7 +55,9 @@ class User extends ActiveRecord implements IdentityInterface
     public function afterSave($insert, $changedAttributes)
     {
         parent::afterSave($insert, $changedAttributes);
-        if (!$insert) {
+        if ($insert) {
+            $this->trigger(self::EVENT_SIGNUP);
+        } else {
             if ($changedAttributes['password_hash'] ?? false) {
                 $this->trigger(self::EVENT_PASSWORD_CHANGES);
             }

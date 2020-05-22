@@ -4,6 +4,7 @@ namespace app\behaviors;
 
 use app\cases\notifications\MessageDto;
 use app\components\Notifications;
+use app\models\NotificationSettings;
 use app\models\User;
 use yii\base\Behavior;
 use yii\base\Event;
@@ -25,8 +26,11 @@ class NotificationsBehavior extends Behavior
 
     public function notify(Event $event): void
     {
-        /** @var Notifications $notifications */
-        $notifications = \Yii::$app->notifications;
-        $notifications->notify(new MessageDto(User::identity(), $this->messages[$event->name]));
+        $user = User::identity();
+        if (NotificationSettings::has($event->name)) {
+            /** @var Notifications $notifications */
+            $notifications = \Yii::$app->notifications;
+            $notifications->notify(new MessageDto($user, $this->messages[$event->name]));
+        }
     }
 }
