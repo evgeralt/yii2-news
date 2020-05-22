@@ -24,6 +24,10 @@ $this->params['breadcrumbs'][] = $this->title;
 
             <?= $form->field($model, 'password')->passwordInput() ?>
 
+            <div style="color:#999;margin:1em 0">
+                <?= Html::a('Sign up', ['site/signup']) ?>
+            </div>
+
             <?= $form->field($model, 'rememberMe')->checkbox() ?>
 
             <div class="form-group">
