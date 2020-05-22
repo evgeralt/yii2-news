@@ -63,8 +63,8 @@ class News extends \yii\db\ActiveRecord implements MultipleUsersNotification
             [
                 'class' => NotificationsBehavior::class,
                 'messages' => [
-                    NotificationSettings::NEWS_CREATE => 'News create',
-                    NotificationSettings::NEWS_DELETE => 'News delete',
+                    NotificationSettings::NEWS_CREATE => 'News created',
+                    NotificationSettings::NEWS_DELETE => 'News deleted',
                 ],
             ],
         ];
@@ -84,6 +84,21 @@ class News extends \yii\db\ActiveRecord implements MultipleUsersNotification
         ];
     }
 
+    public function afterSave($insert, $changedAttributes)
+    {
+        parent::afterSave($insert, $changedAttributes);
+        if ($insert) {
+            $this->trigger(NotificationSettings::NEWS_CREATE);
+        }
+    }
+
+    public function afterDelete()
+    {
+        parent::afterDelete();
+
+        $this->trigger(NotificationSettings::NEWS_DELETE);
+    }
+
     /**
      * Gets query for [[Author]].
      *
@@ -97,8 +112,8 @@ class News extends \yii\db\ActiveRecord implements MultipleUsersNotification
     public function getUsersForNotify(): array
     {
         return User::find()
-            ->select('email')
-            ->where(['not', ['id' => $this->author_id]])
-            ->column();
+            ->select('id,email')
+            ->where(['not', ['id' => User::identity()->id]])
+            ->all();
     }
 }

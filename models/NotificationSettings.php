@@ -20,10 +20,12 @@ class NotificationSettings extends \yii\db\ActiveRecord
 {
     public const USER_SIGNUP = 'user.signup';
     public const USER_PASSWORD_CHANGES = 'user.passwordChanges';
+    public const USER_SPAM = 'user.spam';
     public const NEWS_CREATE = 'news.create';
     public const NEWS_DELETE = 'news.delete';
     public const ALLOWED_SETTINGS = [
         NotificationSettings::USER_PASSWORD_CHANGES,
+        NotificationSettings::USER_SPAM,
         NotificationSettings::NEWS_CREATE,
         NotificationSettings::NEWS_DELETE,
     ];
@@ -90,14 +92,14 @@ class NotificationSettings extends \yii\db\ActiveRecord
         return $this->hasOne(User::class, ['id' => 'user_id']);
     }
 
-    public static function has(string $event): bool
+    public static function has(int $userId, string $event): bool
     {
         $result = false;
         if (Yii::$app->user->isGuest) {
             return $result;
         }
         if (self::$events === null) {
-            self::$events = self::getEvents(Yii::$app->user->getId());
+            self::$events = self::getEvents($userId);
         }
 
         return in_array($event, self::$events, true);
@@ -129,5 +131,10 @@ class NotificationSettings extends \yii\db\ActiveRecord
         }
 
         return self::$events;
+    }
+
+    public static function clearEventsCache(): void
+    {
+        self::$events = null;
     }
 }

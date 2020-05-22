@@ -31,13 +31,13 @@ class NotificationsBehavior extends Behavior
         $users = $this->owner instanceof MultipleUsersNotification
             ? $this->owner->getUsersForNotify()
             : [User::identity()];
-
         foreach ($users as $user) {
-            if (NotificationSettings::has($event->name) || $event->name === NotificationSettings::USER_SIGNUP) {
+            if (NotificationSettings::has($user->id, $event->name) || $event->name === NotificationSettings::USER_SIGNUP) {
                 /** @var Notifications $notifications */
                 $notifications = \Yii::$app->notifications;
                 $notifications->notify(new MessageDto($user->email, $this->messages[$event->name]));
             }
+            NotificationSettings::clearEventsCache();
         }
     }
 }

@@ -128,8 +128,6 @@ class SiteController extends Controller
     public function actionCabinet()
     {
         $model = CabinetForm::findCurrent();
-
-
         if ($model->load(Yii::$app->request->post()) && $model->saveSettings()) {
             Yii::$app->session->setFlash('success', 'Thank you for registration');
 
