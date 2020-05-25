@@ -37,7 +37,7 @@ class NotificationsBehavior extends Behavior
                 $notifications = \Yii::$app->notifications;
                 $notifications->notify(new MessageDto($user->email, $this->messages[$event->name]));
             }
+            NotificationSettings::clearEventsCache();
         }
-        NotificationSettings::clearEventsCache();
     }
 }
